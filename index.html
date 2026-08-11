@@ -447,17 +447,17 @@ footer{
 @keyframes hStat{from{opacity:0;transform:translateY(14px) scale(.93)}to{opacity:1;transform:none}}
 @keyframes hOrb{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
 
-.hero-badge{animation:hBadge .75s cubic-bezier(.34,1.56,.64,1) .1s both}
-h1.hero-h .h-line:nth-child(1) .h-line-inner{animation:hLine .9s cubic-bezier(.16,1,.3,1) .22s both}
-h1.hero-h .h-line:nth-child(2) .h-line-inner{animation:hLine .9s cubic-bezier(.16,1,.3,1) .36s both}
-h1.hero-h .h-line:nth-child(3) .h-line-inner{animation:hLine .9s cubic-bezier(.16,1,.3,1) .5s both}
-.hero-p{animation:hUp .65s ease-out .63s both}
-.hero-cta{animation:hUp .6s cubic-bezier(.34,1.56,.64,1) .77s both}
-.hero-stats .h-stat:nth-child(1){animation:hStat .5s ease-out .88s both}
-.hero-stats .h-stat:nth-child(2){animation:hStat .5s ease-out .97s both}
-.hero-stats .h-stat:nth-child(3){animation:hStat .5s ease-out 1.06s both}
-.hero-stats .h-stat:nth-child(4){animation:hStat .5s ease-out 1.15s both}
-.hero-stats .h-stat:nth-child(5){animation:hStat .5s ease-out 1.24s both}
+#home.hero-go .hero-badge{animation:hBadge .75s cubic-bezier(.34,1.56,.64,1) .1s both}
+#home.hero-go h1.hero-h .h-line:nth-child(1) .h-line-inner{animation:hLine .9s cubic-bezier(.16,1,.3,1) .22s both}
+#home.hero-go h1.hero-h .h-line:nth-child(2) .h-line-inner{animation:hLine .9s cubic-bezier(.16,1,.3,1) .36s both}
+#home.hero-go h1.hero-h .h-line:nth-child(3) .h-line-inner{animation:hLine .9s cubic-bezier(.16,1,.3,1) .5s both}
+#home.hero-go .hero-p{animation:hUp .65s ease-out .63s both}
+#home.hero-go .hero-cta{animation:hUp .6s cubic-bezier(.34,1.56,.64,1) .77s both}
+#home.hero-go .hero-stats .h-stat:nth-child(1){animation:hStat .5s ease-out .88s both}
+#home.hero-go .hero-stats .h-stat:nth-child(2){animation:hStat .5s ease-out .97s both}
+#home.hero-go .hero-stats .h-stat:nth-child(3){animation:hStat .5s ease-out 1.06s both}
+#home.hero-go .hero-stats .h-stat:nth-child(4){animation:hStat .5s ease-out 1.15s both}
+#home.hero-go .hero-stats .h-stat:nth-child(5){animation:hStat .5s ease-out 1.24s both}
 
 /* — dot pulse — */
 @keyframes dotPulse{
@@ -472,8 +472,9 @@ h1.hero-h .h-line:nth-child(3) .h-line-inner{animation:hLine .9s cubic-bezier(.1
   right:-60px;top:50%;
   transform:translateY(-62%);
   pointer-events:none;z-index:0;
-  animation:orbFloat 7s ease-in-out infinite, hOrb .9s ease-out .3s both;
+  animation:orbFloat 7s ease-in-out infinite;
 }
+#home.hero-go .hero-orb-wrap{animation:orbFloat 7s ease-in-out infinite,hOrb .9s ease-out .3s both}
 @keyframes orbFloat{
   0%,100%{transform:translateY(-62%)}
   50%{transform:translateY(-68%)}
@@ -518,7 +519,7 @@ h1.hero-h .h-line:nth-child(3) .h-line-inner{animation:hLine .9s cubic-bezier(.1
 @media(max-width:900px){.hero-orb-wrap{display:none}}
 @media(prefers-reduced-motion:reduce){
   .hero-glow,.hero-badge .dot,.hero-orb-wrap{animation:none}
-  .hero-badge,.h-line-inner,.hero-p,.hero-cta,.hero-stats .h-stat{animation:none}
+  #home.hero-go .hero-badge,#home.hero-go .h-line-inner,#home.hero-go .hero-p,#home.hero-go .hero-cta,#home.hero-go .hero-stats .h-stat{animation:none}
   #hero-bg{display:none}
 }
 
@@ -588,6 +589,7 @@ h1.hero-h .h-line:nth-child(3) .h-line-inner{animation:hLine .9s cubic-bezier(.1
 
 <!-- ===== HERO ===== -->
 <section id="home">
+<script>document.getElementById('home').classList.add('hero-go');</script>
   <canvas id="hero-bg" aria-hidden="true"></canvas>
   <div class="hero-glow" aria-hidden="true"></div>
   <div class="hero-orb-wrap" aria-hidden="true">
