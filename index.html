@@ -12,7 +12,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <style>
 /* ===== RESET ===== */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -440,13 +439,86 @@ footer{
 }
 .h-line{overflow:hidden;display:block;line-height:1.05}
 .h-line-inner{display:block}
+
+/* — CSS entrance keyframes (no JS dep) — */
+@keyframes hBadge{from{opacity:0;transform:translateY(-20px) scale(.9)}to{opacity:1;transform:none}}
+@keyframes hLine{from{transform:translateY(112%)}to{transform:translateY(0)}}
+@keyframes hUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@keyframes hStat{from{opacity:0;transform:translateY(14px) scale(.93)}to{opacity:1;transform:none}}
+@keyframes hOrb{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+
+.hero-badge{animation:hBadge .75s cubic-bezier(.34,1.56,.64,1) .1s both}
+h1.hero-h .h-line:nth-child(1) .h-line-inner{animation:hLine .9s cubic-bezier(.16,1,.3,1) .22s both}
+h1.hero-h .h-line:nth-child(2) .h-line-inner{animation:hLine .9s cubic-bezier(.16,1,.3,1) .36s both}
+h1.hero-h .h-line:nth-child(3) .h-line-inner{animation:hLine .9s cubic-bezier(.16,1,.3,1) .5s both}
+.hero-p{animation:hUp .65s ease-out .63s both}
+.hero-cta{animation:hUp .6s cubic-bezier(.34,1.56,.64,1) .77s both}
+.hero-stats .h-stat:nth-child(1){animation:hStat .5s ease-out .88s both}
+.hero-stats .h-stat:nth-child(2){animation:hStat .5s ease-out .97s both}
+.hero-stats .h-stat:nth-child(3){animation:hStat .5s ease-out 1.06s both}
+.hero-stats .h-stat:nth-child(4){animation:hStat .5s ease-out 1.15s both}
+.hero-stats .h-stat:nth-child(5){animation:hStat .5s ease-out 1.24s both}
+
+/* — dot pulse — */
 @keyframes dotPulse{
   0%,100%{box-shadow:0 0 0 0 rgba(0,112,242,.8)}
   55%{box-shadow:0 0 0 8px rgba(0,112,242,0)}
 }
 .hero-badge .dot{animation:dotPulse 2.5s ease-in-out infinite}
+
+/* — 3-D orb (Dribbble-inspired) — */
+.hero-orb-wrap{
+  position:absolute;
+  right:-60px;top:50%;
+  transform:translateY(-62%);
+  pointer-events:none;z-index:0;
+  animation:orbFloat 7s ease-in-out infinite, hOrb .9s ease-out .3s both;
+}
+@keyframes orbFloat{
+  0%,100%{transform:translateY(-62%)}
+  50%{transform:translateY(-68%)}
+}
+.hero-orb{
+  width:260px;height:260px;border-radius:50%;
+  background:
+    radial-gradient(circle at 32% 28%,rgba(210,235,255,.9) 0%,rgba(130,190,255,.55) 13%,transparent 32%),
+    radial-gradient(circle at 72% 74%,rgba(0,15,50,.95) 0%,transparent 40%),
+    radial-gradient(circle at 50% 50%,#1a5bab 0%,#0c2d72 38%,#060f30 66%,#010208 100%);
+  box-shadow:
+    0 0 55px rgba(0,112,242,.6),
+    0 0 110px rgba(0,112,242,.28),
+    0 0 200px rgba(0,149,217,.14),
+    inset 20px -30px 65px rgba(0,0,0,.78),
+    inset -14px 14px 42px rgba(120,190,255,.24);
+}
+.hero-platform{
+  width:184px;height:42px;border-radius:13px;
+  margin:-6px auto 0;
+  background:linear-gradient(135deg,rgba(16,16,36,.96) 0%,rgba(26,36,68,.88) 50%,rgba(16,16,36,.96) 100%);
+  position:relative;
+  box-shadow:
+    0 0 24px rgba(180,0,255,.4),
+    0 0 48px rgba(0,200,200,.24),
+    0 10px 34px rgba(0,0,0,.65);
+}
+.hero-platform::before{
+  content:'';position:absolute;inset:0;border-radius:13px;padding:1px;
+  background:linear-gradient(130deg,#c800ff 0%,#0070F2 50%,#00cccc 100%);
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+}
+.hero-platform::after{
+  content:'';position:absolute;
+  inset:-1px;border-radius:13px;
+  box-shadow:0 0 18px rgba(180,0,255,.35),0 0 36px rgba(0,200,200,.2);
+  pointer-events:none;
+}
+@media(max-width:1150px){.hero-orb-wrap{right:-120px;opacity:.55}}
+@media(max-width:900px){.hero-orb-wrap{display:none}}
 @media(prefers-reduced-motion:reduce){
-  .hero-glow,.hero-badge .dot{animation:none}
+  .hero-glow,.hero-badge .dot,.hero-orb-wrap{animation:none}
+  .hero-badge,.h-line-inner,.hero-p,.hero-cta,.hero-stats .h-stat{animation:none}
   #hero-bg{display:none}
 }
 
@@ -518,6 +590,10 @@ footer{
 <section id="home">
   <canvas id="hero-bg" aria-hidden="true"></canvas>
   <div class="hero-glow" aria-hidden="true"></div>
+  <div class="hero-orb-wrap" aria-hidden="true">
+    <div class="hero-orb"></div>
+    <div class="hero-platform"></div>
+  </div>
   <div class="hero-badge"><span class="dot"></span>SAP Certified · C_SEC_2601 · MSc InfoSec · Open to Work</div>
   <h1 class="hero-h">
     <span class="h-line"><span class="h-line-inner">Empowering the Three</span></span>
@@ -912,87 +988,33 @@ const fio=new IntersectionObserver(entries=>{
 },{threshold:.08});
 document.querySelectorAll('.fu').forEach(el=>fio.observe(el));
 
-// ===== HERO ANIMATION =====
+// ===== HERO CANVAS (dot grid) =====
 (function(){
   var rm=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
-
-  /* — dot-grid canvas background — */
   var canvas=document.getElementById('hero-bg');
-  if(canvas&&!rm){
-    var ctx=canvas.getContext('2d');
-    var W=0,H=0,dots=[];
-    var SPACING=46,DOT_R=1.1,t=0;
-    function buildGrid(){
-      W=canvas.width=canvas.offsetWidth;
-      H=canvas.height=canvas.offsetHeight;
-      dots=[];
-      var cols=Math.ceil(W/SPACING)+2,rows=Math.ceil(H/SPACING)+2;
-      for(var r=0;r<rows;r++)for(var c=0;c<cols;c++)
-        dots.push({x:c*SPACING,y:r*SPACING,phase:Math.random()*Math.PI*2,speed:.5+Math.random()*.5});
+  if(!canvas||rm)return;
+  var ctx=canvas.getContext('2d');
+  var W=0,H=0,dots=[],t=0;
+  var SP=46,DR=1.1;
+  function buildGrid(){
+    W=canvas.width=canvas.offsetWidth;
+    H=canvas.height=canvas.offsetHeight;
+    dots=[];
+    var cols=Math.ceil(W/SP)+2,rows=Math.ceil(H/SP)+2;
+    for(var r=0;r<rows;r++)for(var c=0;c<cols;c++)
+      dots.push({x:c*SP,y:r*SP,ph:Math.random()*6.283,sp:.5+Math.random()*.5});
+  }
+  buildGrid();
+  new ResizeObserver(buildGrid).observe(canvas.parentElement);
+  (function draw(){
+    ctx.clearRect(0,0,W,H);t+=.014;
+    for(var i=0;i<dots.length;i++){
+      var d=dots[i],w=Math.sin(t*d.sp+d.ph+d.x*.011+d.y*.009),a=.12+w*.10;
+      ctx.beginPath();ctx.arc(d.x,d.y,DR,0,6.283);
+      ctx.fillStyle='rgba(0,112,242,'+a.toFixed(3)+')';ctx.fill();
     }
-    buildGrid();
-    var ro=new ResizeObserver(buildGrid);
-    ro.observe(canvas.parentElement);
-    function draw(){
-      ctx.clearRect(0,0,W,H);
-      t+=.014;
-      for(var i=0;i<dots.length;i++){
-        var d=dots[i];
-        var wave=Math.sin(t*d.speed+d.phase+d.x*.011+d.y*.009);
-        var a=.12+wave*.10;
-        ctx.beginPath();
-        ctx.arc(d.x,d.y,DOT_R,0,6.283);
-        ctx.fillStyle='rgba(0,112,242,'+a.toFixed(3)+')';
-        ctx.fill();
-      }
-      requestAnimationFrame(draw);
-    }
-    draw();
-  }
-
-  /* — GSAP entrance timeline — */
-  function heroIn(){
-    if(!window.gsap||rm)return;
-
-    /* set initial hidden states */
-    gsap.set('.hero-badge',{opacity:0,y:-22,scale:.92});
-    gsap.set('.h-line-inner',{y:'108%',skewY:2});
-    gsap.set('.hero-p',{opacity:0,y:22});
-    gsap.set('.hero-cta',{opacity:0,y:18});
-    gsap.set('.hero-stats .h-stat',{opacity:0,y:16,scale:.94});
-
-    var tl=gsap.timeline({delay:.08});
-
-    /* badge drops in */
-    tl.to('.hero-badge',{opacity:1,y:0,scale:1,duration:.7,ease:'back.out(1.6)'})
-
-    /* headline lines curtain up — staggered */
-      .to('.h-line-inner',{
-        y:'0%',skewY:0,
-        duration:.85,
-        stagger:.13,
-        ease:'power4.out'
-      },'-=.3')
-
-    /* subtitle */
-      .to('.hero-p',{opacity:1,y:0,duration:.65,ease:'power2.out'},'-=.38')
-
-    /* CTAs */
-      .to('.hero-cta',{opacity:1,y:0,duration:.6,ease:'back.out(1.4)'},'-=.32')
-
-    /* stats stagger */
-      .to('.hero-stats .h-stat',{
-        opacity:1,y:0,scale:1,
-        duration:.55,stagger:.09,
-        ease:'power2.out'
-      },'-=.25');
-  }
-
-  if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded',heroIn);
-  } else {
-    heroIn();
-  }
+    requestAnimationFrame(draw);
+  })();
 })();
 </script>
 </body>
