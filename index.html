@@ -12,6 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <style>
 /* ===== RESET ===== */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -106,7 +107,9 @@ section{padding:80px 24px}
   min-height:100vh;display:flex;flex-direction:column;
   align-items:center;justify-content:center;
   text-align:center;padding-top:calc(var(--nav-h)+48px);
+  position:relative;overflow:hidden;
 }
+#home>*{position:relative;z-index:1}
 .hero-badge{
   display:inline-flex;align-items:center;gap:8px;
   background:var(--bg-2);border:1px solid var(--border);
@@ -422,6 +425,31 @@ footer{
 .fu.in{opacity:1;transform:none}
 @media(prefers-reduced-motion:reduce){.fu{transition:none;opacity:1;transform:none}}
 
+/* ===== HERO ANIMATION ===== */
+#hero-bg{position:absolute;inset:0;pointer-events:none;z-index:0;width:100%;height:100%}
+.hero-glow{
+  position:absolute;width:780px;height:780px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,112,242,.11) 0%,rgba(0,149,217,.04) 45%,transparent 70%);
+  left:50%;top:50%;transform:translate(-50%,-58%);
+  pointer-events:none;z-index:0;
+  animation:glowPulse 6s ease-in-out infinite;
+}
+@keyframes glowPulse{
+  0%,100%{opacity:.65;transform:translate(-50%,-58%) scale(1)}
+  50%{opacity:1;transform:translate(-50%,-58%) scale(1.18)}
+}
+.h-line{overflow:hidden;display:block;line-height:1.05}
+.h-line-inner{display:block}
+@keyframes dotPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(0,112,242,.8)}
+  55%{box-shadow:0 0 0 8px rgba(0,112,242,0)}
+}
+.hero-badge .dot{animation:dotPulse 2.5s ease-in-out infinite}
+@media(prefers-reduced-motion:reduce){
+  .hero-glow,.hero-badge .dot{animation:none}
+  #hero-bg{display:none}
+}
+
 /* ===== RESPONSIVE ===== */
 @media(max-width:680px){
   .about-grid,.contact-grid,.tlod-grid{grid-template-columns:1fr}
@@ -488,9 +516,13 @@ footer{
 
 <!-- ===== HERO ===== -->
 <section id="home">
+  <canvas id="hero-bg" aria-hidden="true"></canvas>
+  <div class="hero-glow" aria-hidden="true"></div>
   <div class="hero-badge"><span class="dot"></span>SAP Certified · C_SEC_2601 · MSc InfoSec · Open to Work</div>
   <h1 class="hero-h">
-    Empowering the Three<br>Lines of <em>Defence</em><br>with SAP GRC &amp; IAG.
+    <span class="h-line"><span class="h-line-inner">Empowering the Three</span></span>
+    <span class="h-line"><span class="h-line-inner">Lines of <em>Defence</em></span></span>
+    <span class="h-line"><span class="h-line-inner">with SAP GRC &amp; IAG.</span></span>
   </h1>
   <p class="hero-p">
     I'm <strong style="color:var(--fg)">Qazi Ibrahim Azam</strong> — SAP GRC &amp; Security Consultant with 3+ years of full-cycle delivery across government, banking, and manufacturing.
@@ -879,6 +911,89 @@ const fio=new IntersectionObserver(entries=>{
   );
 },{threshold:.08});
 document.querySelectorAll('.fu').forEach(el=>fio.observe(el));
+
+// ===== HERO ANIMATION =====
+(function(){
+  var rm=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  /* — dot-grid canvas background — */
+  var canvas=document.getElementById('hero-bg');
+  if(canvas&&!rm){
+    var ctx=canvas.getContext('2d');
+    var W=0,H=0,dots=[];
+    var SPACING=46,DOT_R=1.1,t=0;
+    function buildGrid(){
+      W=canvas.width=canvas.offsetWidth;
+      H=canvas.height=canvas.offsetHeight;
+      dots=[];
+      var cols=Math.ceil(W/SPACING)+2,rows=Math.ceil(H/SPACING)+2;
+      for(var r=0;r<rows;r++)for(var c=0;c<cols;c++)
+        dots.push({x:c*SPACING,y:r*SPACING,phase:Math.random()*Math.PI*2,speed:.5+Math.random()*.5});
+    }
+    buildGrid();
+    var ro=new ResizeObserver(buildGrid);
+    ro.observe(canvas.parentElement);
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+      t+=.014;
+      for(var i=0;i<dots.length;i++){
+        var d=dots[i];
+        var wave=Math.sin(t*d.speed+d.phase+d.x*.011+d.y*.009);
+        var a=.12+wave*.10;
+        ctx.beginPath();
+        ctx.arc(d.x,d.y,DOT_R,0,6.283);
+        ctx.fillStyle='rgba(0,112,242,'+a.toFixed(3)+')';
+        ctx.fill();
+      }
+      requestAnimationFrame(draw);
+    }
+    draw();
+  }
+
+  /* — GSAP entrance timeline — */
+  function heroIn(){
+    if(!window.gsap||rm)return;
+
+    /* set initial hidden states */
+    gsap.set('.hero-badge',{opacity:0,y:-22,scale:.92});
+    gsap.set('.h-line-inner',{y:'108%',skewY:2});
+    gsap.set('.hero-p',{opacity:0,y:22});
+    gsap.set('.hero-cta',{opacity:0,y:18});
+    gsap.set('.hero-stats .h-stat',{opacity:0,y:16,scale:.94});
+
+    var tl=gsap.timeline({delay:.08});
+
+    /* badge drops in */
+    tl.to('.hero-badge',{opacity:1,y:0,scale:1,duration:.7,ease:'back.out(1.6)'})
+
+    /* headline lines curtain up — staggered */
+      .to('.h-line-inner',{
+        y:'0%',skewY:0,
+        duration:.85,
+        stagger:.13,
+        ease:'power4.out'
+      },'-=.3')
+
+    /* subtitle */
+      .to('.hero-p',{opacity:1,y:0,duration:.65,ease:'power2.out'},'-=.38')
+
+    /* CTAs */
+      .to('.hero-cta',{opacity:1,y:0,duration:.6,ease:'back.out(1.4)'},'-=.32')
+
+    /* stats stagger */
+      .to('.hero-stats .h-stat',{
+        opacity:1,y:0,scale:1,
+        duration:.55,stagger:.09,
+        ease:'power2.out'
+      },'-=.25');
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',heroIn);
+  } else {
+    heroIn();
+  }
+})();
 </script>
 </body>
 </html>
